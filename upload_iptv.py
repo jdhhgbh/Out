@@ -20,47 +20,45 @@ def main():
         target_url = "https://mytv.best/qr-code/?action=modification&cc=sa&utm_source=app&utm_medium=organic&utm_campaign=upload&tvid=d2ae-801d-d2f7-94d5-9398&lang=ar-SA"
         page.goto(target_url, wait_until="networkidle")
         
-        # استخدام exact text للابتعاد عن مشاكل الرموز
-        page.get_by_text("Express Modification", exact=False).click()
+        # استهداف الزر بدقة باستخدام role="button"
+        page.get_by_role("button", name="Express Modification >>").click()
         page.wait_for_load_state("networkidle")
 
         # الخطوة الثانية
         print("الخطوة 2: الضغط على Upload new playlist...")
-        page.get_by_text("Upload new playlist", exact=False).click()
+        page.get_by_role("button", name="Upload new playlist >>").click()
         page.wait_for_load_state("networkidle")
 
         # الخطوة الثالثة: تعبئة البيانات
         print("الخطوة 3: تعبئة البيانات والرابط...")
         
-        # التأكد من Device ID
-        device_input = page.locator("input").filter(has_text="").first
-        # البحث عن حقل البريد الإلكتروني وتعبئته
+        # تعبئة البريد الإلكتروني
         page.locator("input[type='email']").fill("jyfgjufdg@gmail.com")
 
         # اختيار M3U URL من القائمة المنسدلة
-        selects = page.locator("select")
-        if selects.count() > 0:
-            # تحديد الخيار الأول الخاص بالـ M3U URL
-            selects.last.select_option(index=1)
+        select_element = page.locator("select").first
+        select_element.select_option(label="M3U URL")
 
-        # كتابة رابط M3U في حقل النص الخاص به
+        # كتابة رابط M3U في حقل M3U URL
         page.locator("input[type='text']").last.fill(m3u_url)
 
         # تحديد مربع الموافقة على الشروط
-        page.locator("input[type='checkbox']").check()
+        checkbox = page.locator("input[type='checkbox']").first
+        if not checkbox.is_checked():
+            checkbox.check()
 
-        # الضغط على Upload
+        # الضغط على زر Upload
         print("الضغط على زر Upload...")
         page.get_by_role("button", name="Upload").click()
         page.wait_for_load_state("networkidle")
 
         # الخطوة الرابعة: التخطي (Skip الأول والثاني)
         print("الخطوة 4: الضغط على Skip (Cleaning Groups)...")
-        page.get_by_text("Skip", exact=True).first.click(timeout=10000)
+        page.get_by_role("button", name="Skip").first.click(timeout=10000)
         page.wait_for_load_state("networkidle")
 
         print("الضغط على Skip (Parental Control)...")
-        page.get_by_text("Skip", exact=True).first.click(timeout=10000)
+        page.get_by_role("button", name="Skip").first.click(timeout=10000)
         page.wait_for_load_state("networkidle")
 
         print("تمت العملية بنجاح! 🎉")
