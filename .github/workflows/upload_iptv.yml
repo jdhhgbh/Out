@@ -1,0 +1,33 @@
+name: Upload IPTV Playlist
+
+on:
+  workflow_dispatch:
+    inputs:
+      m3u_url:
+        description: 'أدخل رابط M3U هنا'
+        required: true
+        type: string
+
+jobs:
+  run-automation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install playwright
+          playwright install --with-deps chromium
+
+      - name: Run IPTV Upload Script
+        env:
+          M3U_URL: ${{ github.event.inputs.m3u_url }}
+        run: python upload_iptv.py
